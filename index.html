@@ -1,0 +1,82 @@
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<link rel="stylesheet" href="assets/css/all.min.css">
+		<link rel="stylesheet" href="style.css">
+	</head>
+	<body>
+		<div id="app" 
+			v-bind:class="{ 'darktheme': dark_theme, 'noscroll': reading_post, 'loaded': true }">
+			<section class="subreddit-switcher-space"></section>
+			<section class="subreddit-switcher">
+				<a class="sub-select link" 
+					v-on:click="switchSubreddits()">r/{{ current_subreddit }}</a>
+				<!-- agrupar no span -->
+				<span>
+					<a class="link" title="Previous page" 
+						v-bind:class="{ 'blocked': current_page <= 1 }" 
+						v-on:click="switchPages(-1)">previous</a>
+					<!-- <a class="page-number">{{ current_page }}</a> -->
+					<a class="link hspacing" title="Next page"
+						v-on:click="switchPages(1)">next</a>
+
+					<a class="sorting link" title="Sort by..."
+						v-on:click="switchSorting()">{{ sorting_method }}</a>
+				</span>	
+				<a class="link theme-switch fas" title="Switch themes" 
+					v-bind:class="{ 'fa-moon': dark_theme, 'fa-sun': !dark_theme }" v-on:click="dark_theme = !dark_theme"></a>
+			</section>
+			<section class="posts">
+				<ul>
+					<li class="post preview" 
+						v-for="post in post_list" 
+						v-on:click="openPost(post)">
+						<p class="title">{{ post.title }}</p>
+						<p class="content">
+							{{ post.content }}
+						</p>
+						<p class="status">
+							<!-- <span class="author">by {{ post.author }}</span> -->
+							<span class="score">{{ post.score }}</span>
+							<!-- <span class="comments">{{ post.comments }}</span> -->
+						</p>
+					</li>
+				</ul>
+			</section>
+
+			<section class="post-viewer-overlay" 
+				v-if="reading_post"
+				v-bind:class="{ 'visible': reading_post }"
+				v-on:click.self="reading_post = false">
+
+				<div class="post-viewer">
+					<p class="actions">
+						<a class="link close-btn" title="Close"
+							v-on:click="closePost" >×</a>
+					</p>
+					<p class="title">{{ curr_post.title }}</p>
+					<p class="content" v-html="curr_post.parsed_content"></p>
+					<p class="status">
+						<span class="author">by {{ curr_post.author }}</span>
+						<span class="score">{{ curr_post.score }}</span>
+						<!-- <span class="comments">{{ curr_post.comments }}</span> -->
+					</p>
+					<section class="comments">
+						<div class="comment" v-for="comment in curr_post.comments">
+							<p class="comment-data">
+								<span class="score">{{ comment.score }} karma</span>
+								<span class="author">by {{ comment.author }}</span>
+							</p>
+							<p class="comment-text" v-html="comment.content_parsed"></p>
+						</div>
+					</section>
+				</div>
+			</section>
+		</div>
+
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.11/vue.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/markdown-it/10.0.0/markdown-it.min.js"></script>
+		<script src="app.js"></script>
+	</body>
+</html>
